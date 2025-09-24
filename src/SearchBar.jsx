@@ -1,53 +1,41 @@
 import React, { useState } from "react";
 
-function SearchBar({ onPlaceSelect }) {
+const SearchBar = ({ onPlaceSelect }) => {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!query) return;
 
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&countrycodes=in&q=${encodeURIComponent(
-        query
-      )}`
-    );
-    const data = await res.json();
-    setResults(data);
+    // Nominatim API for place search
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}`;
+    const response = await fetch(url);
+    const data = await response.json();
 
-    if (data.length > 0) {
-      onPlaceSelect(data[0]); // pick first by default
+    if (data && data.length > 0) {
+      const place = data[0]; // take first result
+      onPlaceSelect({
+        lat: parseFloat(place.lat),
+        lon: parseFloat(place.lon),
+        display_name: place.display_name,
+      });
+    } else {
+      alert("No results found!");
     }
   };
 
   return (
-    <div style={{ padding: "10px" }}>
-      <form onSubmit={handleSearch}>
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search for a place"
-          style={{ width: "200px", padding: "5px" }}
-        />
-        <button type="submit">Search</button>
-      </form>
-
-      {/* Show multiple results */}
-      <ul>
-        {results.map((r, i) => (
-          <li
-            key={i}
-            style={{ cursor: "pointer" }}
-            onClick={() => onPlaceSelect(r)}
-          >
-            {r.display_name}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <form onSubmit={handleSearch} style={{ marginBottom: "10px" }}>
+      <input
+        type="text"
+        placeholder="Search for a location..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        style={{ padding: "8px", width: "250px", marginRight: "8px" }}
+      />
+      <button type="submit">Search</button>
+    </form>
   );
-}
+};
 
 export default SearchBar;

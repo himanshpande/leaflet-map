@@ -1,3 +1,5 @@
+@import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -10,4 +12,38 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Light mode styles (default) */
+.app.light-mode {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.app.light-mode .card {
+  background-color: #ffffff;
+  color: #212529;
+}
+
+.app.light-mode .btn-primary {
+  background-color: #0d6efd;
+}
+
+/* Dark mode styles */
+.app.dark-mode {
+  background-color: #121212;
+  color: #f8f9fa;
+}
+
+.app.dark-mode .card {
+  background-color: #1e1e1e;
+  color: #f8f9fa;
+}
+
+.app.dark-mode .btn-primary {
+  background-color: #375a7f;
+}
+
+.app.dark-mode .bg-primary {
+  background-color: #343a40 !important;
 }

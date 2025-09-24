@@ -1,5 +1,3 @@
-import React from "react";
-
 function SavedPlaces({ places, onSelect }) {
   return (
     <ul>
