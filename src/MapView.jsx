@@ -6,6 +6,7 @@ import { Button, Spinner, Card, Form, Dropdown } from "react-bootstrap";
 
 
 
+
 // Custom marker icons
 const customIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
@@ -79,7 +80,7 @@ const MapView = () => {
   const [distance, setDistance] = useState(null);
   const [duration, setDuration] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedPOIType, setSelectedPOIType] = useState(null);
   const [pois, setPois] = useState([]);
   const [poiLoading, setPoiLoading] = useState(false);
@@ -91,10 +92,15 @@ const MapView = () => {
     return saved ? JSON.parse(saved) : [];
   });
   const [showRecentPlaces, setShowRecentPlaces] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => {
-  // Load saved theme from localStorage if exists
-  return localStorage.getItem("theme") === "dark";
+ const [darkMode, setDarkMode] = useState(() => {
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === null) {
+    // No saved theme, default to dark
+    return true;
+  }
+  return savedTheme === "dark";
 });
+
 
   const mapRef = useRef();
 
@@ -364,7 +370,7 @@ if (!userLocation) {
               color: darkMode ? '#ffffff' : '#2d3748'
             }}
           >
-            {sidebarOpen ? "⨉" : "☰"}
+            {!sidebarOpen ? "☰" : "⨉"}
           </Button>
         </div>
         <div className="flex-column d-flex gap-2">
