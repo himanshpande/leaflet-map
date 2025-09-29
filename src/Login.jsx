@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Notification from './Notification';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const AuthForm = ({ onLogin }) => {
+
+const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [notification, setNotification] = useState({ type: '', message: '' });
+  const navigate = useNavigate(); 
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -14,30 +18,42 @@ const AuthForm = ({ onLogin }) => {
     setPassword('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isLogin) {
-      // Login mode
-      if (username === 'user' && password === '1234') {
-        onLogin();
-        setNotification({ type: 'success', message: 'Login successful!' });
-      } else {
-        setNotification({ type: 'error', message: 'Invalid credentials. Try user / 1234' });
-      }
-    } else {
-      // Signup mode — simple validation
-      if (username.length < 3 || password.length < 4) {
-        setNotification({ type: 'warning', message: 'Please enter a valid name and password.' });
-        return;
-      }
+    try {
+      if (isLogin) {
+        const res = await axios.post("http://localhost:5000/login", {
+          loginId: username,
+          password,
+        });
 
-      setNotification({ type: 'success', message: 'Account created! (UI only)' });
-      setIsLogin(true);
+        setNotification({ type: res.data.message.includes("✅") ? "success" : "error", message: res.data.message });
+
+        if (res.data.message.includes("✅")) {
+          localStorage.setItem("token", res.data.token);
+          console.log(localStorage)
+          navigate("/dashboard");
+        }
+      } else {
+        // ✅ Signup API
+        const res = await axios.post("http://localhost:5000/register", {
+          loginId: username,
+          password,
+        });
+
+        setNotification({ type: res.data.message.includes("✅") ? "success" : "error", message: res.data.message });
+
+        if (res.data.message.includes("✅")) {
+          setIsLogin(true); // switch back to login after signup
+        }
+      }
+    } catch (err) {
+      setNotification({ type: "error", message: "Server error" });
     }
   };
 
-  // Auto-dismiss notification after 3 seconds
+  // Auto-dismiss notification
   useEffect(() => {
     if (notification.message) {
       const timer = setTimeout(() => {
@@ -47,7 +63,7 @@ const AuthForm = ({ onLogin }) => {
     }
   }, [notification]);
 
-  // Styles (same as before)
+  // 🎨 UI styles (same as yours)
   const wrapperStyle = {
     minHeight: '100vh',
     background: 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)',
@@ -112,14 +128,8 @@ const AuthForm = ({ onLogin }) => {
 
   const fadeInKeyframes = `
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   `;
 
@@ -127,7 +137,6 @@ const AuthForm = ({ onLogin }) => {
     <>
       <style>{fadeInKeyframes}</style>
 
-      {/* ✅ Notification Component */}
       <Notification
         type={notification.type}
         message={notification.message}
@@ -141,17 +150,15 @@ const AuthForm = ({ onLogin }) => {
           </h2>
 
           <form autoComplete="off" onSubmit={handleSubmit}>
-            {/* Username or Full Name field */}
             <input
               type="text"
               className="form-control"
-              placeholder={isLogin ? 'Username' : 'Full Name'}
+              placeholder="Username"
               style={inputStyle}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
 
-            {/* Password field */}
             <input
               type="password"
               className="form-control"
@@ -161,7 +168,6 @@ const AuthForm = ({ onLogin }) => {
               onChange={(e) => setPassword(e.target.value)}
             />
 
-            {/* Submit Button */}
             <button type="submit" style={buttonStyle}>
               {isLogin ? 'Login' : 'Sign Up'}
             </button>

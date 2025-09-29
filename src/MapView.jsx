@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-
 import L from "leaflet";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Spinner, Card, Form, Dropdown } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -71,6 +72,7 @@ const FitBounds = ({ start, dest, route }) => {
 };
 
 const MapView = () => {
+  const navigate = useNavigate();
   const [userLocation, setUserLocation] = useState(null);
   const [startLocation, setStartLocation] = useState(null);
   const [destination, setDestination] = useState(null);
@@ -110,6 +112,11 @@ const MapView = () => {
       localStorage.setItem("theme", newTheme ? "dark" : "light");
       return newTheme;
     });
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
   };
 
   // Save recent place
@@ -568,6 +575,19 @@ if (!userLocation) {
         {pois.length} {selectedPOIType?.name.toLowerCase()}s found
       </div>
     )}
+  
+    <Button 
+      variant="outline-danger" 
+      size="sm" 
+      onClick={handleLogout}
+      style={{
+        backgroundColor: darkMode ? '#744210' : '#ffffff',
+        borderColor: darkMode ? '#d69e2e' : '#dc3545',
+        color: darkMode ? '#ffffff' : '#dc3545'
+      }}
+    >
+      🚪 Logout
+    </Button>
   </Card.Body>
 </Card>
 

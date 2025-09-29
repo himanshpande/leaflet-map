@@ -1,21 +1,20 @@
-import logo from './logo.svg';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { useState } from 'react';
-import MapView from './MapView';
-import Login from './Login';
+
+import MapView from './MapView.jsx';
+import AuthForm from './Login.jsx';
+
+
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   return (
-    <div>
-      <div>
-      {isLoggedIn ? (
-        <MapView onLogout={() => setIsLoggedIn(false)} />
-      ) : (
-        <Login onLogin={() => setIsLoggedIn(true)} />
-      )}
-    </div>
-    </div>
+    <Router>
+       <Routes>
+        <Route path="/" element={<AuthForm />} />
+        <Route path="/dashboard" element={<MapView />} />
+      </Routes>
+      </Router>
   );
 }
 
